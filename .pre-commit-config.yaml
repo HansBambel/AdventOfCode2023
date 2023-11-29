@@ -12,7 +12,7 @@ repos:
       description: Prevent giant files from being committed
       entry: check-added-large-files
       language: python
-      args: [ '--maxkb=350', '--enforce-all' ]
+      args: [ '--maxkb=350' ]
     - id: detect-private-key
 
 -   repo: https://github.com/psf/black

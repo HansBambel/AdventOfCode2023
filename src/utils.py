@@ -6,9 +6,7 @@ import numpy as np
 neighbors = [(-1, 0), (+1, 0), (0, -1), (0, +1)]
 
 
-def dijkstra(
-    grid: np.array, start_pos: Tuple[int, int]
-) -> Tuple[np.array, Dict[Tuple[int, int], Tuple[int, int]]]:
+def dijkstra(grid: np.array, start_pos: Tuple[int, int]) -> Tuple[np.array, Dict[Tuple[int, int], Tuple[int, int]]]:
     """Shortest path between paths. Template that can be used and adapted."""
     prev: Dict[Tuple[int, int], Tuple[int, int]] = {}
     dist = np.ones(shape=grid.shape) * np.inf
