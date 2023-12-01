@@ -7,7 +7,6 @@
 #   all-features: false
 
 -e file:.
-colorama==0.4.6
 contourpy==1.2.0
 cycler==0.12.1
 fonttools==4.45.1
