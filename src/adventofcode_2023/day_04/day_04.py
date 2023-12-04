@@ -14,12 +14,7 @@ def part_1(input_file: str):
         winning_numbers = set(re.findall(r"\d+", winning))
         own_numbers = set(re.findall(r"\d+", own))
         matches = winning_numbers.intersection(own_numbers)
-        new_points = 0
-        if matches:
-            new_points = 1
-            for _ in range(len(matches) - 1):
-                new_points *= 2
-        points += new_points
+        points += int(2 ** (len(matches) - 1))
 
     return points
 
