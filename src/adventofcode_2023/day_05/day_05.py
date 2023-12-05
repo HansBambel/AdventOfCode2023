@@ -2,14 +2,10 @@ import re
 from pathlib import Path
 
 
-def part_1(input_file: str):
-    data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n\n")
-    seeds = re.findall(r"\d+", input_data[0])
+def _get_seed_paths(seeds, mappings) -> list:
     seeds_path = [[int(seed)] for seed in seeds]
-    input_data = input_data[1:]
     for seed_path in seeds_path:
-        for mapping in input_data:
+        for mapping in mappings:
             mapping = mapping.split("\n")
             locations = mapping[1:]
             # Add the identity and change it later
@@ -24,7 +20,15 @@ def part_1(input_file: str):
                 if seed_path[-1] in range(source, source + range_ind):
                     found = True
                     seed_path[-1] = destination + seed_path[-1] - source
+    return seeds_path
 
+
+def part_1(input_file: str):
+    data_file = Path(__file__).with_name(input_file).read_text()
+    input_data = data_file.split("\n\n")
+    seeds = re.findall(r"\d+", input_data[0])
+
+    seeds_path = _get_seed_paths(seeds, input_data[1:])
     # get the smallest location
     locations = [path[-1] for path in seeds_path]
     return min(locations)
@@ -32,7 +36,16 @@ def part_1(input_file: str):
 
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n")
+    input_data = data_file.split("\n\n")
+    seed_ranges = re.findall(r"\d+", input_data[0])
+    seeds = []
+    for i in range(0, len(seed_ranges), 2):
+        start, range_ind = int(seed_ranges[i]), int(seed_ranges[i + 1])
+        seeds += list(range(start, start + range_ind))
+    seeds_path = _get_seed_paths(seeds, input_data[1:])
+    # get the smallest location
+    locations = [path[-1] for path in seeds_path]
+    return min(locations)
 
 
 if __name__ == "__main__":
