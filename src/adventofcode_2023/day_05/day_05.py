@@ -4,11 +4,7 @@ from pathlib import Path
 
 def _get_location(seed, mappings):
     for mapping in mappings:
-        mapping = mapping.split("\n")
-        lines = mapping[1:]
-        for line in lines:
-            # destination, source, range
-            destination, source, range_ind = (int(x) for x in re.findall(r"\d+", line))
+        for destination, source, range_ind in mapping:
             # check if the seed is in there
             if seed in range(source, source + range_ind):
                 seed = destination + seed - source
@@ -27,7 +23,13 @@ def part_1(input_file: str):
     input_data = data_file.split("\n\n")
     seeds = list(map(int, re.findall(r"\d+", input_data[0])))
 
-    locations = _get_seed_paths(seeds, input_data[1:])
+    # parse_mappings
+    parsed_mappings = []
+    for mapping in input_data[1:]:
+        mapping = mapping.split("\n")
+        lines = [tuple(int(x) for x in re.findall(r"\d+", line)) for line in mapping[1:]]
+        parsed_mappings.append(lines)
+    locations = _get_seed_paths(seeds, parsed_mappings)
     # get the smallest location
     return min(locations)
 
@@ -41,7 +43,14 @@ def part_2(input_file: str):
         start, range_ind = int(seed_ranges[i]), int(seed_ranges[i + 1])
         seeds += list(range(start, start + range_ind))
     seeds = list(map(int, seeds))
-    locations = _get_seed_paths(seeds, input_data[1:])
+
+    # parse_mappings
+    parsed_mappings = []
+    for mapping in input_data[1:]:
+        mapping = mapping.split("\n")
+        lines = [tuple(int(x) for x in re.findall(r"\d+", line)) for line in mapping[1:]]
+        parsed_mappings.append(lines)
+    locations = _get_seed_paths(seeds, parsed_mappings)
     # get the smallest location
     return min(locations)
 
