@@ -7,19 +7,16 @@ def _get_seed_paths(seeds, mappings) -> list:
     for seed_path in seeds_path:
         for mapping in mappings:
             mapping = mapping.split("\n")
-            locations = mapping[1:]
+            lines = mapping[1:]
             # Add the identity and change it later
             seed_path.append(seed_path[-1])
-            found = False
-            for location in locations:
-                if found:
-                    break
+            for line in lines:
                 # destination, source, range
-                destination, source, range_ind = (int(x) for x in re.findall(r"\d+", location))
+                destination, source, range_ind = (int(x) for x in re.findall(r"\d+", line))
                 # check if the seed is in there
                 if seed_path[-1] in range(source, source + range_ind):
-                    found = True
                     seed_path[-1] = destination + seed_path[-1] - source
+                    break
     return seeds_path
 
 
