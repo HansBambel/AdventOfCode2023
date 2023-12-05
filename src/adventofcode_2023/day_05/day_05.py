@@ -1,5 +1,7 @@
 import re
 from pathlib import Path
+from joblib import Parallel, delayed
+from tqdm import tqdm
 
 
 def _get_location(seed, mappings):
@@ -13,9 +15,10 @@ def _get_location(seed, mappings):
 
 
 def _get_seed_paths(seeds, mappings) -> list:
-    for i, seed in enumerate(seeds):
-        seeds[i] = _get_location(seed, mappings)
-    return seeds
+    results = Parallel(n_jobs=16)(delayed(_get_location)(seed, mappings) for seed in tqdm(seeds))
+    # for i, seed in enumerate(seeds):
+    #     seeds[i] = _get_location(seed, mappings)
+    return results
 
 
 def part_1(input_file: str):
@@ -38,6 +41,8 @@ def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n\n")
     seed_ranges = re.findall(r"\d+", input_data[0])
+
+    # running OOM here already, lol
     seeds = []
     for i in range(0, len(seed_ranges), 2):
         start, range_ind = int(seed_ranges[i]), int(seed_ranges[i + 1])
