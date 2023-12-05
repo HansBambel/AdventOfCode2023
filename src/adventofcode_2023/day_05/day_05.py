@@ -8,17 +8,17 @@ def _get_location(seed, mappings):
     for mapping in mappings:
         for destination, source, range_ind in mapping:
             # check if the seed is in there
-            if seed in range(source, source + range_ind):
+            if source <= seed < source + range_ind:
+                # get new location
                 seed = destination + seed - source
                 break
     return seed
 
 
-def _get_seed_paths(seeds, mappings) -> list:
-    results = Parallel(n_jobs=16)(delayed(_get_location)(seed, mappings) for seed in tqdm(seeds))
-    # for i, seed in enumerate(seeds):
-    #     seeds[i] = _get_location(seed, mappings)
-    return results
+def _get_seed_locations(seeds, mappings) -> list:
+    for i, seed in enumerate(seeds):
+        seeds[i] = _get_location(seed, mappings)
+    return seeds
 
 
 def _get_seed_paths2(seed_ranges, mappings) -> list:
@@ -31,7 +31,7 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
     return results
 
 
-def _parse_mapping(input_data):
+def _parse_mapping(input_data) -> list[[list[tuple[int, int, int]]]]:
     parsed_mappings = []
     for mapping in input_data[1:]:
         mapping = mapping.split("\n")
@@ -46,7 +46,7 @@ def part_1(input_file: str):
     parsed_mappings = _parse_mapping(input_data)
 
     seeds = list(map(int, re.findall(r"\d+", input_data[0])))
-    locations = _get_seed_paths(seeds, parsed_mappings)
+    locations = _get_seed_locations(seeds, parsed_mappings)
     # get the smallest location
     return min(locations)
 
