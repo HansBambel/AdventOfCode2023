@@ -21,17 +21,31 @@ def _get_seed_paths(seeds, mappings) -> list:
     return results
 
 
-def part_1(input_file: str):
-    data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n\n")
-    seeds = list(map(int, re.findall(r"\d+", input_data[0])))
+def _get_seed_paths2(seed_ranges, mappings) -> list:
+    results = []
+    for seed_range in seed_ranges:
+        new_results = Parallel(n_jobs=16)(delayed(_get_location)(seed, mappings) for seed in tqdm(seed_range))
+        results.extend(new_results)
+    # for i, seed in enumerate(seeds):
+    #     seeds[i] = _get_location(seed, mappings)
+    return results
 
-    # parse_mappings
+
+def _parse_mapping(input_data):
     parsed_mappings = []
     for mapping in input_data[1:]:
         mapping = mapping.split("\n")
         lines = [tuple(int(x) for x in re.findall(r"\d+", line)) for line in mapping[1:]]
         parsed_mappings.append(lines)
+    return parsed_mappings
+
+
+def part_1(input_file: str):
+    data_file = Path(__file__).with_name(input_file).read_text()
+    input_data = data_file.split("\n\n")
+    parsed_mappings = _parse_mapping(input_data)
+
+    seeds = list(map(int, re.findall(r"\d+", input_data[0])))
     locations = _get_seed_paths(seeds, parsed_mappings)
     # get the smallest location
     return min(locations)
@@ -40,22 +54,12 @@ def part_1(input_file: str):
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n\n")
-    seed_ranges = re.findall(r"\d+", input_data[0])
+    parsed_mappings = _parse_mapping(input_data)
 
-    # running OOM here already, lol
-    seeds = []
-    for i in range(0, len(seed_ranges), 2):
-        start, range_ind = int(seed_ranges[i]), int(seed_ranges[i + 1])
-        seeds += list(range(start, start + range_ind))
-    seeds = list(map(int, seeds))
+    seed_ranges = list(map(int, re.findall(r"\d+", input_data[0])))
+    seed_ranges = [range(seed_ranges[i], seed_ranges[i] + seed_ranges[i + 1]) for i in range(0, len(seed_ranges), 2)]
 
-    # parse_mappings
-    parsed_mappings = []
-    for mapping in input_data[1:]:
-        mapping = mapping.split("\n")
-        lines = [tuple(int(x) for x in re.findall(r"\d+", line)) for line in mapping[1:]]
-        parsed_mappings.append(lines)
-    locations = _get_seed_paths(seeds, parsed_mappings)
+    locations = _get_seed_paths2(seed_ranges, parsed_mappings)
     # get the smallest location
     return min(locations)
 
