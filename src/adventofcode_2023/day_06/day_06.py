@@ -2,10 +2,12 @@ import math
 import re
 from pathlib import Path
 
+from tqdm import tqdm
+
 
 def _get_winnings(time, distance) -> int:
     wins = 0
-    for i in range(time + 1):
+    for i in tqdm(range(time + 1)):
         if (time - i) * i > distance:
             wins += 1
     return wins
