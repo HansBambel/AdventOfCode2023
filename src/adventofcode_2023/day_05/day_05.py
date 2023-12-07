@@ -26,8 +26,7 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
     new_ranges = []
     for mapping in tqdm(mappings):
         while len(ranges) > 0:
-            seed_start, seed_num = ranges.pop()
-            seed_end = seed_start + seed_num
+            seed_start, seed_end = ranges.pop()
             found = False
             for destination, source, range_ind in mapping:
                 map_end = source + range_ind
@@ -37,32 +36,32 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
                 # we have overlap
                 if source <= seed_start and map_end >= seed_end:
                     # all seeds are in mapping
-                    new_ranges.append((destination + seed_start - source, seed_num))
+                    new_ranges.append((destination + seed_start - source, destination + seed_end - source))
                 elif source <= seed_start and map_end <= seed_end:
                     # partial overlap left
                     overlap = map_end - seed_start
                     if overlap == 0:
                         continue
-                    new_ranges.append((destination + seed_start, overlap))
-                    ranges.append((seed_start + overlap, seed_num - overlap))
+                    new_ranges.append((destination + seed_start, destination + seed_start + overlap))
+                    ranges.append((seed_start + overlap, seed_end))
                 elif source >= seed_start and source + range_ind <= seed_end:
                     # inner overlap
                     overlap = range_ind
-                    new_ranges.append((destination + source, overlap))
-                    ranges.append((seed_start, source - seed_start))
-                    ranges.append((map_end, seed_end - (map_end)))
+                    new_ranges.append((destination + source, destination + source + overlap))
+                    ranges.append((seed_start, source))
+                    ranges.append((map_end, seed_end))
                 elif source <= seed_end and map_end >= seed_end:
                     # partial overlap right
                     overlap = seed_end - source
                     if overlap == 0:
                         continue
                     new_ranges.append((destination + source, overlap))
-                    ranges.append((seed_start, source - seed_start))
+                    ranges.append((seed_start, source))
                 else:
                     raise ValueError("Missed a case")
                 found = True
             if not found:
-                new_ranges.append((seed_start, seed_num))
+                new_ranges.append((seed_start, seed_end))
         ranges = new_ranges
         new_ranges = []
 
@@ -84,7 +83,7 @@ def part_1(input_file: str):
     parsed_mappings = _parse_mapping(input_data)
 
     seeds = list(map(int, re.findall(r"\d+", input_data[0])))
-    locations = _get_seed_paths2([(seed, 1) for seed in seeds], parsed_mappings)
+    locations = _get_seed_paths2([(seed, seed + 1) for seed in seeds], parsed_mappings)
 
     # get the smallest location
     min_val = 1e100
@@ -100,7 +99,7 @@ def part_2(input_file: str):
     parsed_mappings = _parse_mapping(input_data)
 
     seed_ranges = list(map(int, re.findall(r"\d+", input_data[0])))
-    seed_ranges = [(seed_ranges[i], seed_ranges[i + 1]) for i in range(0, len(seed_ranges), 2)]
+    seed_ranges = [(seed_ranges[i], seed_ranges[i] + seed_ranges[i + 1]) for i in range(0, len(seed_ranges), 2)]
 
     locations = _get_seed_paths2(seed_ranges, parsed_mappings)
     # get the smallest location
@@ -129,4 +128,5 @@ if __name__ == "__main__":
     result = part_2("input.txt")
     assert result > 62988482
     assert result > 62988483
+    assert result > 79032545
     print(result)
