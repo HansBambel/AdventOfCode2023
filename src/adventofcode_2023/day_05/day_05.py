@@ -43,12 +43,11 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
                     overlap = map_end - seed_start
                     if overlap == 0:
                         continue
-                    new_ranges.append((seed_start + offset, seed_start + overlap + offset))
-                    ranges.append((seed_start + overlap, seed_end))
+                    new_ranges.append((seed_start + offset, map_end + offset))
+                    ranges.append((map_end, seed_end))
                 elif source >= seed_start and source + range_ind <= seed_end:
                     # inner overlap
-                    overlap = range_ind
-                    new_ranges.append((destination + source, destination + source + overlap))
+                    new_ranges.append((source + offset, map_end + offset))
                     ranges.append((seed_start, source))
                     ranges.append((map_end, seed_end))
                 elif source <= seed_end and map_end >= seed_end:
@@ -56,7 +55,7 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
                     overlap = seed_end - source
                     if overlap == 0:
                         continue
-                    new_ranges.append((destination + source, destination + overlap))
+                    new_ranges.append((source + offset, seed_end + offset))
                     ranges.append((seed_start, source))
                 else:
                     raise ValueError("Missed a case")
@@ -130,4 +129,5 @@ if __name__ == "__main__":
     assert result > 62988482
     assert result > 62988483
     assert result > 79032545
+    assert result == 79874951
     print(result)
