@@ -27,33 +27,33 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
     for mapping in tqdm(mappings):
         while len(ranges) > 0:
             seed_start, seed_num = ranges.pop()
+            seed_end = seed_start + seed_num
             found = False
             for destination, source, range_ind in mapping:
+                map_end = source + range_ind
                 # no overlap
-                if source + range_ind < seed_start:
-                    continue
-                elif source > seed_start + seed_num:
+                if map_end < seed_start or source > seed_end:
                     continue
                 # we have overlap
-                if source <= seed_start and source + range_ind >= seed_start + seed_num:
+                if source <= seed_start and map_end >= seed_end:
                     # all seeds are in mapping
                     new_ranges.append((destination + seed_start - source, seed_num))
-                elif source <= seed_start and source + range_ind <= seed_start + seed_num:
+                elif source <= seed_start and map_end <= seed_end:
                     # partial overlap left
-                    overlap = source + range_ind - seed_start
+                    overlap = map_end - seed_start
                     if overlap == 0:
                         continue
                     new_ranges.append((destination + seed_start, overlap))
                     ranges.append((seed_start + overlap, seed_num - overlap))
-                elif source >= seed_start and source + range_ind <= seed_start + seed_num:
+                elif source >= seed_start and source + range_ind <= seed_end:
                     # inner overlap
                     overlap = range_ind
                     new_ranges.append((destination + source, overlap))
                     ranges.append((seed_start, source - seed_start))
-                    ranges.append((source + range_ind, (seed_start + seed_num) - (source + range_ind)))
-                elif source <= seed_start + seed_num and source + range_ind >= seed_start + seed_num:
+                    ranges.append((map_end, seed_end - (map_end)))
+                elif source <= seed_end and map_end >= seed_end:
                     # partial overlap right
-                    overlap = seed_start + seed_num - source
+                    overlap = seed_end - source
                     if overlap == 0:
                         continue
                     new_ranges.append((destination + source, overlap))
