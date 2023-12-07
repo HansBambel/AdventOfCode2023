@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from tqdm import tqdm
+
 
 def _get_location(seed, mappings):
     for mapping in mappings:
@@ -22,10 +24,9 @@ def _get_seed_locations(seeds, mappings) -> list:
 def _get_seed_paths2(seed_ranges, mappings) -> list:
     ranges = seed_ranges
     new_ranges = []
-    for mapping in mappings:
+    for mapping in tqdm(mappings):
         while len(ranges) > 0:
             seed_start, seed_num = ranges.pop()
-            seed_num -= 1  # seed_num 1 means only seed_start
             found = False
             for destination, source, range_ind in mapping:
                 # no overlap
@@ -40,19 +41,23 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
                 elif source <= seed_start and source + range_ind <= seed_start + seed_num:
                     # partial overlap left
                     overlap = source + range_ind - seed_start
+                    if overlap == 0:
+                        continue
                     new_ranges.append((destination + seed_start, overlap))
-                    ranges.append((seed_start + overlap + 1, seed_num - overlap))
+                    ranges.append((seed_start + overlap, seed_num - overlap))
                 elif source >= seed_start and source + range_ind <= seed_start + seed_num:
                     # inner overlap
                     overlap = range_ind
                     new_ranges.append((destination + source, overlap))
-                    ranges.append((seed_start, source - seed_start - 1))
-                    ranges.append((source + range_ind + 1, (seed_start + seed_num) - (source + range_ind) - 1))
+                    ranges.append((seed_start, source - seed_start))
+                    ranges.append((source + range_ind, (seed_start + seed_num) - (source + range_ind)))
                 elif source <= seed_start + seed_num and source + range_ind >= seed_start + seed_num:
                     # partial overlap right
                     overlap = seed_start + seed_num - source
+                    if overlap == 0:
+                        continue
                     new_ranges.append((destination + source, overlap))
-                    ranges.append((seed_start + seed_num + 1, source + range_ind - (seed_start + seed_num)))
+                    ranges.append((seed_start, source - seed_start))
                 else:
                     raise ValueError("Missed a case")
                 found = True
@@ -122,4 +127,6 @@ if __name__ == "__main__":
     assert result == 46
 
     result = part_2("input.txt")
+    assert result > 62988482
+    assert result > 62988483
     print(result)
