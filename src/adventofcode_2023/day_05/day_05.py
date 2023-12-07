@@ -30,19 +30,20 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
             found = False
             for destination, source, range_ind in mapping:
                 map_end = source + range_ind
+                offset = destination - source
                 # no overlap
                 if map_end < seed_start or source > seed_end:
                     continue
                 # we have overlap
                 if source <= seed_start and map_end >= seed_end:
                     # all seeds are in mapping
-                    new_ranges.append((destination + seed_start - source, destination + seed_end - source))
+                    new_ranges.append((seed_start + offset, seed_end + offset))
                 elif source <= seed_start and map_end <= seed_end:
                     # partial overlap left
                     overlap = map_end - seed_start
                     if overlap == 0:
                         continue
-                    new_ranges.append((destination + seed_start, destination + seed_start + overlap))
+                    new_ranges.append((seed_start + offset, seed_start + overlap + offset))
                     ranges.append((seed_start + overlap, seed_end))
                 elif source >= seed_start and source + range_ind <= seed_end:
                     # inner overlap
@@ -55,7 +56,7 @@ def _get_seed_paths2(seed_ranges, mappings) -> list:
                     overlap = seed_end - source
                     if overlap == 0:
                         continue
-                    new_ranges.append((destination + source, overlap))
+                    new_ranges.append((destination + source, destination + overlap))
                     ranges.append((seed_start, source))
                 else:
                     raise ValueError("Missed a case")
