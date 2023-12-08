@@ -1,3 +1,4 @@
+import math
 import re
 from pathlib import Path
 
@@ -31,13 +32,21 @@ def part_2(input_file: str):
 
     current_nodes = [node for node in mappings.keys() if node[-1] == "A"]
     steps = 0
-    while not all(node[-1] == "Z" for node in current_nodes):
+    found_loop_after = []
+    while len(current_nodes) > 0:
         next_instr = instructions[steps % len(instructions)] == "R"
         for i, current in enumerate(current_nodes):
             current_nodes[i] = mappings[current][next_instr]
         steps += 1
+        for current in current_nodes:
+            if current[-1] == "Z":
+                found_loop_after.append(steps)
+        current_nodes = [node for node in current_nodes if node[-1] != "Z"]
 
-    return steps
+    # math.prod(found_loop_after)
+    # this result is one "save" step where they all end on Z, but we want to find the first time this happened
+    # --> the least common multiplier
+    return math.lcm(*found_loop_after)
 
 
 if __name__ == "__main__":
@@ -60,4 +69,6 @@ if __name__ == "__main__":
     assert result == 6
 
     result = part_2("input.txt")
+    assert result < 12410494419143079334048741
+    assert result == 8811050362409
     print(result)
