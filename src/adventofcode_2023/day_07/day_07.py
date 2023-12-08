@@ -104,22 +104,22 @@ def part_2(input_file: str):
 
 
 if __name__ == "__main__":
-    # print("#" * 10 + " Part 1 " + "#" * 10)
-    # result_ex = part_1("input_ex.txt")
-    # print(result_ex)
-    # assert result_ex == 6440
-    #
-    # result_ex = part_1("input_ex2.txt")
-    # print(result_ex)
-    # assert result_ex == 3542
-    #
-    # result_ex = part_1("input_ex3.txt")
-    # print(result_ex)
-    # assert result_ex == 1343
-    #
-    # result = part_1("input.txt")
-    # assert result < 254240091
-    # print(result)
+    print("#" * 10 + " Part 1 " + "#" * 10)
+    result_ex = part_1("input_ex.txt")
+    print(result_ex)
+    assert result_ex == 6440
+
+    result_ex = part_1("input_ex2.txt")
+    print(result_ex)
+    assert result_ex == 3542
+
+    result_ex = part_1("input_ex3.txt")
+    print(result_ex)
+    assert result_ex == 1343
+
+    result = part_1("input.txt")
+    assert result < 254240091
+    print(result)
 
     # #### Part 2 ####
     print("#" * 10 + " Part 2 " + "#" * 10)
