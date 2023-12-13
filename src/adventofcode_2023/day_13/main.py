@@ -2,17 +2,15 @@ from pathlib import Path
 
 
 def check_reflection_get_leftover(pattern) -> int:
-    my_stack = [pattern[0]]
     for i, line in enumerate(pattern[1:], start=1):
-        if my_stack[-1] == line:
+        if pattern[i - 1] == line:
             # check if all previous elements are in reverse order in the rest of the pattern
-            if all(pattern[j] == my_stack[-j - 1] for j in range(len(my_stack))) or all(
-                p == my_stack[i - j - 1] for j, p in enumerate(pattern[i:])
-            ):
+            left = pattern[:i]
+            right = pattern[i:]
+            shorter, longer = (left, right) if len(left) < len(right) else (right, left)
+            if set(shorter).issubset(set(longer)):
                 # we found a reflection
-                return len(pattern) - len(my_stack)
-        else:
-            my_stack.append(line)
+                return i
     return 0
 
 
@@ -29,7 +27,7 @@ def part_1(input_file: str):
         transposed_pattern = ["".join(x) for x in transposed]
         # check vertical reflection
         leftover_vertical = check_reflection_get_leftover(transposed_pattern)
-        total += leftover_horizontal + leftover_vertical * 100
+        total += leftover_horizontal * 100 + leftover_vertical
 
     return total
 
@@ -41,11 +39,24 @@ def part_2(input_file: str):
 
 if __name__ == "__main__":
     print("#" * 10 + " Part 1 " + "#" * 10)
+    result_ex = part_1("input_ex1.txt")
+    print(result_ex)
+    assert result_ex == 5
+
+    result_ex = part_1("input_ex2.txt")
+    print(result_ex)
+    assert result_ex == 400
+
     result_ex = part_1("input_ex.txt")
     print(result_ex)
     assert result_ex == 405
 
+    result_ex = part_1("input_ex3.txt")
+    print(result_ex)
+    assert result_ex == 709
+
     result = part_1("input.txt")
+    assert result < 38272
     print(result)
 
     # #### Part 2 ####
