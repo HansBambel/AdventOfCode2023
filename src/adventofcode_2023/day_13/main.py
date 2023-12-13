@@ -65,5 +65,9 @@ if __name__ == "__main__":
     print(result)
     assert result == 1337
 
+    result = part_2("input_ex3.txt")
+    print(result)
+    assert result == 1400
+
     result = part_2("input.txt")
     print(result)
