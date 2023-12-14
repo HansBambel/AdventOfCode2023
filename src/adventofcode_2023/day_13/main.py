@@ -8,9 +8,14 @@ def check_reflection_get_leftover(pattern) -> int:
             left = pattern[:i]
             right = pattern[i:]
             shorter, longer = (left, right) if len(left) < len(right) else (right, left)
-            if set(shorter).issubset(set(longer)):
-                # we found a reflection
+            for j in range(len(shorter)):
+                if shorter[j] != longer[-j - 1]:
+                    break
+            else:
                 return i
+            # if set(shorter).issubset(set(longer)):
+            #     # we found a reflection
+            #     return i
     return 0
 
 
@@ -60,6 +65,7 @@ if __name__ == "__main__":
     result = part_1("input.txt")
     assert result < 38272
     assert result < 38261
+    assert result > 30311
     print(result)
 
     # #### Part 2 ####
