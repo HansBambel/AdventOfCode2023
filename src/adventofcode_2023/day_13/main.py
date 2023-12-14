@@ -22,12 +22,14 @@ def part_1(input_file: str):
     for pattern in patterns:
         # check horizontal reflection
         pattern = pattern.split("\n")
-        leftover_horizontal = check_reflection_get_leftover(pattern)
-        transposed = list(map(list, zip(*pattern)))
-        transposed_pattern = ["".join(x) for x in transposed]
-        # check vertical reflection
-        leftover_vertical = check_reflection_get_leftover(transposed_pattern)
-        total += leftover_horizontal * 100 + leftover_vertical
+        leftover_rows = check_reflection_get_leftover(pattern)
+        leftover_cols = 0
+        if leftover_rows == 0:
+            transposed = list(map(list, zip(*pattern)))
+            transposed_pattern = ["".join(x) for x in transposed]
+            # check vertical reflection
+            leftover_cols = check_reflection_get_leftover(transposed_pattern)
+        total += leftover_rows * 100 + leftover_cols
 
     return total
 
@@ -57,6 +59,7 @@ if __name__ == "__main__":
 
     result = part_1("input.txt")
     assert result < 38272
+    assert result < 38261
     print(result)
 
     # #### Part 2 ####
