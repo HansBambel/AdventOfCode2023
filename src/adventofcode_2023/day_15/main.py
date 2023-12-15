@@ -39,8 +39,7 @@ def part_2(input_file: str):
         label = re.findall(r"\w+", chars)[0]
         hash_value = get_hash_value(label)
         if "-" in chars:
-            if label in my_map[hash_value]:
-                my_map[hash_value].pop(label)
+            my_map[hash_value].pop(label, None)
         else:
             value = int(re.findall(r"\d+", chars)[0])
             my_map[hash_value][label] = value
