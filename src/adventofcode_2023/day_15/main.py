@@ -1,3 +1,4 @@
+from collections import OrderedDict, defaultdict
 from pathlib import Path
 
 
@@ -20,9 +21,33 @@ def part_1(input_file: str):
     return value
 
 
+def calc_focusing_power(my_map):
+    focusing_power = 0
+    for key, lenses in my_map.items():
+        for i, focal_power in enumerate(lenses.values()):
+            focusing_power += (key + 1) * (i + 1) * focal_power
+    return focusing_power
+
+
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n")
+    sequence = data_file.split(",")
+    my_map: defaultdict[int, OrderedDict[str, int]] = defaultdict(lambda: OrderedDict())
+
+    for chars in sequence:
+        if "-" in chars:
+            label = chars.split("-")[0]
+        else:
+            label = chars.split("=")[0]
+        hash_value = get_hash_value(label)
+        if "-" in chars:
+            if chars[:-1] in my_map[hash_value]:
+                my_map[hash_value].pop(chars[:-1])
+        else:
+            my_map[hash_value][chars.split("=")[0]] = int(chars.split("=")[1])
+
+    focusing_power = calc_focusing_power(my_map)
+    return focusing_power
 
 
 if __name__ == "__main__":
