@@ -1,3 +1,4 @@
+import re
 from collections import OrderedDict, defaultdict
 from pathlib import Path
 
@@ -35,16 +36,14 @@ def part_2(input_file: str):
     my_map: defaultdict[int, OrderedDict[str, int]] = defaultdict(lambda: OrderedDict())
 
     for chars in sequence:
-        if "-" in chars:
-            label = chars.split("-")[0]
-        else:
-            label = chars.split("=")[0]
+        label = re.findall(r"\w+", chars)[0]
         hash_value = get_hash_value(label)
         if "-" in chars:
-            if chars[:-1] in my_map[hash_value]:
-                my_map[hash_value].pop(chars[:-1])
+            if label in my_map[hash_value]:
+                my_map[hash_value].pop(label)
         else:
-            my_map[hash_value][chars.split("=")[0]] = int(chars.split("=")[1])
+            value = int(re.findall(r"\d+", chars)[0])
+            my_map[hash_value][label] = value
 
     focusing_power = calc_focusing_power(my_map)
     return focusing_power
