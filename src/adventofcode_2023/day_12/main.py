@@ -53,7 +53,6 @@ def part_1(input_file: str):
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
-    input_data = data_file.split("\n")
 
     total = 0
     for line in tqdm(input_data):
