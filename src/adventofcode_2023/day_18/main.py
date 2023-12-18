@@ -11,6 +11,7 @@ def polygon_area(x, y):
 
 
 def get_area_with_boundary(points: list[tuple[int, int]]) -> int:
+    """Get the area of the polygon with the boundary that is described by the list of points."""
     path_len = sum(
         [abs(points[i][0] - points[i + 1][0]) + abs(points[i][1] - points[i + 1][1]) for i in range(len(points) - 1)]
     )
