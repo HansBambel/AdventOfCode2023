@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from tqdm import tqdm
+
 parsed = {}
 
 
@@ -78,18 +80,20 @@ def part_2(input_file: str):
 
     # Brute-force is probably too slow
     # Create all possible combinations of xmas from 1 to 4000
-    accepted = []
-    for rating in ratings.split("\n"):
-        rating_dict = {
-            "x": int(re.findall(r"x=(\d+),", rating)[0]),
-            "m": int(re.findall(r"m=(\d+),", rating)[0]),
-            "a": int(re.findall(r"a=(\d+),", rating)[0]),
-            "s": int(re.findall(r"s=(\d+)", rating)[0]),
-        }
+    # and check if it is accepted
+    ratings = (
+        {"x": x, "m": m, "a": a, "s": s}
+        for x in range(1, 4001)
+        for m in range(1, 4001)
+        for a in range(1, 4001)
+        for s in range(1, 4001)
+    )
+    total = 0
+    for rating_dict in tqdm(ratings, total=4000**4):
         if check_accepted(rating_dict):
-            accepted.append(rating_dict)
+            total += sum(rating_dict.values())
 
-    return sum(sum(rating.values()) for rating in accepted)
+    return total
 
 
 if __name__ == "__main__":
