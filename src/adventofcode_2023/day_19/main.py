@@ -4,23 +4,25 @@ from pathlib import Path
 parsed = {}
 
 
-def parse_instruction(instr: str) -> dict[str, tuple[callable, str]]:
+def parse_instruction(instr: str) -> dict[tuple[int, str], tuple[callable, str]]:
     split_up = instr.split(",")
+    # I was not considering that a part can have multiple instructions
+    # just add an index to allow multiple instructions for the same part
     instructions = {}
-    for split in split_up:
+    for i, split in enumerate(split_up):
         if ">" in split:
             part, condition = split.split(">")
             value, new_flow = condition.split(":")
             # see https://realpython.com/python-lambda/#evaluation-time
-            instructions[part] = (lambda x, value=value: x > int(value), new_flow)
+            instructions[(i, part)] = (lambda x, value=value: x > int(value), new_flow)
         elif "<" in split:
             part, condition = split.split("<")
             value, new_flow = condition.split(":")
-            instructions[part] = (lambda x, value=value: x < int(value), new_flow)
+            instructions[(i, part)] = (lambda x, value=value: x < int(value), new_flow)
         else:
             # set default of instruction
             # split in this case is the next flow
-            instructions["default"] = (lambda: True, split)
+            instructions[(i, "default")] = (lambda: True, split)
     return instructions
 
 
@@ -40,7 +42,7 @@ def check_accepted(rating: dict[str, int], current_flow: str = "in") -> bool:
         return False
     global parsed
     instruction = parsed[current_flow]
-    for check_part, (comparison, new_flow) in instruction.items():
+    for (_, check_part), (comparison, new_flow) in instruction.items():
         if check_part == "default":
             return check_accepted(rating, new_flow)
         if comparison(rating[check_part]):
@@ -70,7 +72,24 @@ def part_1(input_file: str):
 
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n\n")
+    workflows, ratings = data_file.split("\n\n")
+    global parsed
+    parsed = parse_workflows(workflows)
+
+    # Brute-force is probably too slow
+    # Create all possible combinations of xmas from 1 to 4000
+    accepted = []
+    for rating in ratings.split("\n"):
+        rating_dict = {
+            "x": int(re.findall(r"x=(\d+),", rating)[0]),
+            "m": int(re.findall(r"m=(\d+),", rating)[0]),
+            "a": int(re.findall(r"a=(\d+),", rating)[0]),
+            "s": int(re.findall(r"s=(\d+)", rating)[0]),
+        }
+        if check_accepted(rating_dict):
+            accepted.append(rating_dict)
+
+    return sum(sum(rating.values()) for rating in accepted)
 
 
 if __name__ == "__main__":
@@ -87,7 +106,7 @@ if __name__ == "__main__":
     print("#" * 10 + " Part 2 " + "#" * 10)
     result = part_2("input_ex.txt")
     print(result)
-    assert result == 1337
+    assert result == 167409079868000
 
     result = part_2("input.txt")
     print(result)
