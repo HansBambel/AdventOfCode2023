@@ -46,6 +46,18 @@ def part_2(input_file: str):
 
 if __name__ == "__main__":
     print("#" * 10 + " Part 1 " + "#" * 10)
+    result_ex = part_1("input_ex5.txt")
+    print(result_ex)
+    assert result_ex == 1
+
+    result_ex = part_1("input_ex6.txt")
+    print(result_ex)
+    assert result_ex == 2
+
+    result_ex = part_1("input_ex4.txt")
+    print(result_ex)
+    assert result_ex == 11
+
     result_ex = part_1("input_ex1.txt")
     print(result_ex)
     assert result_ex == 5
